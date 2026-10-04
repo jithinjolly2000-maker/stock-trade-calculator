@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stock Trade Calculator (India)</title>
+<style>
+  :root{--paper:#f6f8fa;--panel:#fff;--ink:#17202b;--muted:#55616e;--dim:#8a94a0;--line:#e3e8ee;
+    --accent:#1f6f4f;--accent-soft:#1f6f4f12;--up:#17854a;--down:#c0392b;--warn:#b5841f;--shadow:0 1px 2px rgba(20,25,30,.04),0 6px 20px rgba(20,25,30,.06);}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Segoe UI",system-ui,-apple-system,Arial,sans-serif;background:var(--paper);color:var(--ink);line-height:1.45;font-size:14px}
+  .wrap{max-width:900px;margin:0 auto;padding:28px 22px 60px}
+  header.top{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:16px;border-bottom:2px solid var(--accent);padding-bottom:15px}
+  .brand h1{font-size:22px;font-weight:700}.brand .sub{color:var(--muted);font-size:13px;margin-top:4px;max-width:62ch}
+  .by{text-align:right;font-size:12px;color:var(--muted)}.by a{color:var(--accent);text-decoration:none}
+  .note{background:var(--accent-soft);border:1px solid var(--line);border-left:3px solid var(--accent);padding:10px 14px;border-radius:6px;font-size:12.5px;color:var(--muted);margin:18px 0 18px}
+  .note b{color:var(--ink)}
+  .maintabs{display:flex;flex-wrap:wrap;border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:18px}
+  .maintabs button{font:inherit;font-size:13.5px;font-weight:700;padding:11px 16px;border:none;background:var(--panel);color:var(--muted);cursor:pointer;flex:1}
+  .maintabs button+button{border-left:1px solid var(--line)}.maintabs button.active{background:var(--accent);color:#fff}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:20px;margin-bottom:16px}
+  .grid{display:grid;gap:14px}.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:repeat(3,1fr)}
+  @media(max-width:560px){.g2,.g3{grid-template-columns:1fr}}
+  .fld{display:flex;flex-direction:column;gap:5px}
+  .fld label{font-size:11.5px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+  .fld input,.fld select{font:inherit;font-size:16px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink)}
+  .fld input:focus,.fld select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+  .seg{display:inline-flex;border:1px solid var(--line);border-radius:9px;overflow:hidden;margin-top:3px}
+  .seg button{font:inherit;font-size:13.5px;font-weight:600;padding:9px 15px;border:none;background:var(--paper);color:var(--muted);cursor:pointer}
+  .seg button+button{border-left:1px solid var(--line)}.seg button.active{background:var(--accent);color:#fff}
+  .result{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:4px}
+  .rc{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 15px;box-shadow:var(--shadow);text-align:center}
+  .rc.big{border-top:3px solid var(--accent)}
+  .rc .l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;font-weight:600}
+  .rc .v{font-size:22px;font-weight:800;margin-top:4px;font-variant-numeric:tabular-nums}
+  .rc .v.up{color:var(--up)}.rc .v.down{color:var(--down)}
+  h2{font-size:12.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--accent);margin:18px 0 10px}
+  table{width:100%;border-collapse:collapse;font-size:13px;background:var(--panel);border:1px solid var(--line);border-radius:11px;overflow:hidden}
+  th,td{padding:8px 13px;border-bottom:1px solid var(--line);text-align:right}th:first-child,td:first-child{text-align:left}
+  th{font-size:10.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--dim);font-weight:700}tr:last-child td{border-bottom:none}
+  tr.total{font-weight:700;background:var(--accent-soft)}
+  .pane{display:none}.pane.active{display:block}
+  .buys{margin-bottom:10px}
+  .buyrow{display:grid;grid-template-columns:1fr 1fr 34px;gap:9px;margin-bottom:7px}
+  .buyrow input{font:inherit;font-size:14px;padding:8px 10px;border:1px solid var(--line);border-radius:7px;background:var(--paper)}
+  .buyrow .x{color:var(--dim);cursor:pointer;text-align:center;font-size:17px;align-self:center}.buyrow .x:hover{color:var(--down)}
+  .btn{font:inherit;font-size:12.5px;font-weight:600;padding:7px 13px;border-radius:7px;border:1px solid var(--line);background:var(--panel);color:var(--muted);cursor:pointer}
+  .btn:hover{border-color:var(--accent);color:var(--accent)}
+  footer{margin-top:28px;padding-top:16px;border-top:1px solid var(--line);font-size:12px;color:var(--dim);text-align:center}
+  footer a{color:var(--accent);text-decoration:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><h1>Stock Trade Calculator <span style="font-size:13px;color:var(--muted);font-weight:600">🇮🇳 India</span></h1>
+      <div class="sub">Four trader calculators: risk-based <b>position sizing</b>, <b>average cost-basis</b>, <b>risk-reward / target</b>, and Indian <b>brokerage &amp; charges</b> (STT, exchange, SEBI, stamp duty, GST).</div></div>
+    <div class="by">Built by <b>Jithin J</b><br><a href="https://github.com/jithinjolly2000-maker" target="_blank" rel="noopener">github.com/jithinjolly2000-maker</a></div>
+  </header>
+  <div class="note">ℹ️ <b>Calculator, not advice.</b> No live prices — you enter them. Charge rates match standard Indian discount-broker structures (2026); your broker's exact figures and plan may vary. In-browser; nothing uploaded.</div>
+
+  <div class="maintabs" id="maintabs">
+    <button data-t="size" class="active">Position Sizing</button>
+    <button data-t="avg">Average / Cost-basis</button>
+    <button data-t="rr">Risk-Reward</button>
+    <button data-t="charges">Brokerage &amp; Charges</button>
+  </div>
+
+  <!-- POSITION SIZING -->
+  <div class="pane active" id="pane-size">
+    <div class="card"><div class="grid g2">
+      <div class="fld"><label>Account capital (₹)</label><input id="zCap" type="number" step="1000" value="500000"></div>
+      <div class="fld"><label>Risk per trade (%)</label><input id="zRisk" type="number" step="0.1" value="1"></div>
+      <div class="fld"><label>Entry price (₹)</label><input id="zEntry" type="number" step="0.05" value="500"></div>
+      <div class="fld"><label>Stop-loss price (₹)</label><input id="zStop" type="number" step="0.05" value="485"></div>
+    </div></div>
+    <div class="result" id="zResult"></div>
+    <div style="font-size:11.5px;color:var(--dim);margin-top:8px">Position size = (capital × risk%) ÷ (entry − stop). Caps the quantity so a stop-out loses only your chosen risk amount.</div>
+  </div>
+
+  <!-- AVERAGE -->
+  <div class="pane" id="pane-avg">
+    <div class="card">
+      <h2 style="margin-top:0">Your buys</h2>
+      <div class="buys" id="aBuys"></div>
+      <button class="btn" id="aAdd">+ Add buy</button>
+    </div>
+    <div class="result" id="aResult"></div>
+    <h2>If you want to average to a target price</h2>
+    <div class="card"><div class="grid g2">
+      <div class="fld"><label>Target average (₹)</label><input id="aTarget" type="number" step="0.05" value="480"></div>
+      <div class="fld"><label>Next buy price (₹)</label><input id="aNextPrice" type="number" step="0.05" value="450"></div>
+    </div>
+    <div class="result" id="aAvgDown" style="margin-top:14px"></div></div>
+  </div>
+
+  <!-- RISK REWARD -->
+  <div class="pane" id="pane-rr">
+    <div class="card"><div class="grid g3">
+      <div class="fld"><label>Entry (₹)</label><input id="rEntry" type="number" step="0.05" value="500"></div>
+      <div class="fld"><label>Stop-loss (₹)</label><input id="rStop" type="number" step="0.05" value="485"></div>
+      <div class="fld"><label>Target (₹)</label><input id="rTarget" type="number" step="0.05" value="545"></div>
+      <div class="fld"><label>Quantity</label><input id="rQty" type="number" step="1" value="100"></div>
+      <div class="fld"><label>Direction</label>
+        <div class="seg" id="rDir"><button data-d="long" class="active">Long</button><button data-d="short">Short</button></div>
+      </div>
+    </div></div>
+    <div class="result" id="rResult"></div>
+  </div>
+
+  <!-- CHARGES -->
+  <div class="pane" id="pane-charges">
+    <div class="card"><div class="grid g3">
+      <div class="fld"><label>Buy price (₹)</label><input id="cBuy" type="number" step="0.05" value="500"></div>
+      <div class="fld"><label>Sell price (₹)</label><input id="cSell" type="number" step="0.05" value="520"></div>
+      <div class="fld"><label>Quantity</label><input id="cQty" type="number" step="1" value="100"></div>
+      <div class="fld"><label>Segment</label>
+        <div class="seg" id="cSeg"><button data-d="delivery" class="active">Delivery</button><button data-d="intraday">Intraday</button></div>
+      </div>
+      <div class="fld"><label>Brokerage plan</label>
+        <div class="seg" id="cPlan"><button data-d="discount" class="active">Discount (₹20/0.03%)</button><button data-d="zero">Zero (delivery)</button></div>
+      </div>
+    </div></div>
+    <div class="result" id="cResult"></div>
+    <h2>Charge breakdown</h2>
+    <table id="cTable"><tbody></tbody></table>
+    <div style="font-size:11.5px;color:var(--dim);margin-top:8px">Rates (2026): STT delivery 0.1% buy+sell / intraday 0.025% sell · exchange txn 0.00297% (NSE) · SEBI 0.0001% · stamp duty 0.015% delivery / 0.003% intraday (buy) · GST 18% on (brokerage + txn + SEBI).</div>
+  </div>
+
+  <footer>Static tool · vanilla HTML/CSS/JS · in-browser · GitHub Pages · <a href="https://github.com/jithinjolly2000-maker/stock-trade-calculator" target="_blank" rel="noopener">source</a></footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  function rupee(n){ var s=n<0?"-":""; return s+"\u20b9"+Math.abs(n).toLocaleString("en-IN",{minimumFractionDigits:2,maximumFractionDigits:2}); }
+  function rupee0(n){ var s=n<0?"-":""; return s+"\u20b9"+Math.abs(Math.round(n)).toLocaleString("en-IN"); }
+  function num(id){ return parseFloat(document.getElementById(id).value)||0; }
+  function rcard(l,v,cls,big){ return '<div class="rc'+(big?' big':'')+'"><div class="l">'+l+'</div><div class="v'+(cls?' '+cls:'')+'">'+v+'</div></div>'; }
+
+  document.getElementById("maintabs").addEventListener("click",function(e){var b=e.target.closest("button");if(!b)return;
+    Array.prototype.forEach.call(this.children,function(x){x.classList.remove("active");});b.classList.add("active");
+    var t=b.getAttribute("data-t");
+    ["size","avg","rr","charges"].forEach(function(p){document.getElementById("pane-"+p).classList.toggle("active",p===t);});});
+  function segHandler(id,cb){document.getElementById(id).addEventListener("click",function(e){var b=e.target.closest("button");if(!b)return;
+    Array.prototype.forEach.call(this.children,function(x){x.classList.remove("active");});b.classList.add("active");cb(b.getAttribute("data-d"));});}
+
+  // ---- POSITION SIZING ----
+  function calcSize(){
+    var cap=num("zCap"),risk=num("zRisk"),entry=num("zEntry"),stop=num("zStop");
+    var riskAmt=cap*risk/100;
+    var perShare=Math.abs(entry-stop);
+    var qty=perShare>0?Math.floor(riskAmt/perShare):0;
+    var capital=qty*entry;
+    var capPct=cap>0?capital/cap*100:0;
+    document.getElementById("zResult").innerHTML=
+      rcard("Risk amount",rupee0(riskAmt),"down",false)+
+      rcard("Shares to buy",qty.toLocaleString("en-IN"),"",true)+
+      rcard("Capital deployed",rupee0(capital),"",false)+
+      rcard("% of account",capPct.toFixed(1)+"%",capPct>100?"down":"",false);
+  }
+  ["zCap","zRisk","zEntry","zStop"].forEach(function(id){document.getElementById(id).addEventListener("input",calcSize);});
+
+  // ---- AVERAGE / COST BASIS ----
+  var buys=[{qty:100,price:500},{qty:50,price:470}];
+  function renderBuys(){
+    document.getElementById("aBuys").innerHTML=buys.map(function(b,i){
+      return '<div class="buyrow" data-i="'+i+'"><input class="b-qty" type="number" placeholder="Qty" value="'+b.qty+'"><input class="b-price" type="number" step="0.05" placeholder="Price ₹" value="'+b.price+'"><span class="x">×</span></div>';
+    }).join("");
+  }
+  function readBuys(){
+    var rows=document.getElementById("aBuys").querySelectorAll(".buyrow");
+    buys=Array.prototype.map.call(rows,function(r){return {qty:parseFloat(r.querySelector(".b-qty").value)||0,price:parseFloat(r.querySelector(".b-price").value)||0};});
+  }
+  function calcAvg(){
+    readBuys();
+    var totQty=buys.reduce(function(s,b){return s+b.qty;},0);
+    var totCost=buys.reduce(function(s,b){return s+b.qty*b.price;},0);
+    var avg=totQty>0?totCost/totQty:0;
+    document.getElementById("aResult").innerHTML=
+      rcard("Total quantity",totQty.toLocaleString("en-IN"),"",false)+
+      rcard("Total invested",rupee0(totCost),"",false)+
+      rcard("Average price",rupee(avg),"",true);
+    // average-down: to reach target avg, buy how many at nextPrice?
+    var target=num("aTarget"),nextP=num("aNextPrice");
+    // (totCost + x*nextP)/(totQty + x) = target  ->  x = (target*totQty - totCost)/(nextP - target)
+    var denom=(nextP-target);
+    var x = denom!==0 ? (target*totQty - totCost)/denom : 0;
+    var feasible = isFinite(x) && x>0;
+    document.getElementById("aAvgDown").innerHTML = feasible
+      ? rcard("Buy at ₹"+nextP,Math.ceil(x).toLocaleString("en-IN")+" shares","up",true)+rcard("New avg",rupee(target),"",false)+rcard("Extra outlay",rupee0(Math.ceil(x)*nextP),"",false)
+      : '<div class="rc" style="grid-column:1/-1"><div class="l">Target not reachable</div><div class="v" style="font-size:14px;color:var(--muted)">A buy at ₹'+nextP+' can\u2019t move your average ('+rupee(avg)+') to ₹'+target+' in that direction.</div></div>';
+  }
+  document.getElementById("aBuys").addEventListener("input",calcAvg);
+  document.getElementById("aBuys").addEventListener("click",function(e){if(e.target.classList.contains("x")){readBuys();var i=+e.target.closest(".buyrow").getAttribute("data-i");buys.splice(i,1);if(!buys.length)buys=[{qty:0,price:0}];renderBuys();calcAvg();}});
+  document.getElementById("aAdd").addEventListener("click",function(){readBuys();buys.push({qty:0,price:0});renderBuys();calcAvg();});
+  document.getElementById("aTarget").addEventListener("input",calcAvg);
+  document.getElementById("aNextPrice").addEventListener("input",calcAvg);
+
+  // ---- RISK REWARD ----
+  var rDir="long";
+  function calcRR(){
+    var entry=num("rEntry"),stop=num("rStop"),target=num("rTarget"),qty=num("rQty");
+    var riskPS,rewPS;
+    if(rDir==="long"){ riskPS=entry-stop; rewPS=target-entry; }
+    else { riskPS=stop-entry; rewPS=entry-target; }
+    var risk=riskPS*qty, reward=rewPS*qty;
+    var rr = riskPS>0 ? rewPS/riskPS : 0;
+    var riskPct=entry>0?riskPS/entry*100:0, rewPct=entry>0?rewPS/entry*100:0;
+    document.getElementById("rResult").innerHTML=
+      rcard("Risk (to stop)",rupee0(risk)+" ("+riskPct.toFixed(1)+"%)","down",false)+
+      rcard("Reward (to target)",rupee0(reward)+" ("+rewPct.toFixed(1)+"%)","up",false)+
+      rcard("Risk : Reward","1 : "+rr.toFixed(2),rr>=2?"up":(rr>0?"":"down"),true)+
+      rcard("Breakeven win-rate",(rr>0?(100/(1+rr)).toFixed(1)+"%":"—"),"",false);
+  }
+  ["rEntry","rStop","rTarget","rQty"].forEach(function(id){document.getElementById(id).addEventListener("input",calcRR);});
+  segHandler("rDir",function(d){rDir=d;calcRR();});
+
+  // ---- CHARGES (India) ----
+  var cSeg="delivery",cPlan="discount";
+  function calcCharges(){
+    var buy=num("cBuy"),sell=num("cSell"),qty=num("cQty");
+    var buyVal=buy*qty, sellVal=sell*qty, turnover=buyVal+sellVal;
+    // brokerage
+    var brokerage=0;
+    if(cPlan==="discount"){
+      if(cSeg==="delivery"){ brokerage=0; } // most discount brokers: delivery free; intraday ₹20/0.03%
+      else { brokerage=Math.min(20,buyVal*0.0003)+Math.min(20,sellVal*0.0003); }
+    } else { brokerage=0; }
+    // STT
+    var stt = cSeg==="delivery" ? (buyVal+sellVal)*0.001 : sellVal*0.00025;
+    // exchange transaction charge (NSE ~0.00297%)
+    var exch=turnover*0.0000297;
+    // SEBI 0.0001%
+    var sebi=turnover*0.000001;
+    // stamp duty (buy side): delivery 0.015%, intraday 0.003%
+    var stamp = buyVal*(cSeg==="delivery"?0.00015:0.00003);
+    // GST 18% on brokerage + exchange + sebi
+    var gst=(brokerage+exch+sebi)*0.18;
+    var totalCharges=brokerage+stt+exch+sebi+stamp+gst;
+    var grossPnl=sellVal-buyVal;
+    var netPnl=grossPnl-totalCharges;
+    var breakeven = qty>0 ? buy + totalCharges/qty : buy;
+
+    document.getElementById("cResult").innerHTML=
+      rcard("Gross P&L",rupee0(grossPnl),grossPnl>=0?"up":"down",false)+
+      rcard("Total charges",rupee(totalCharges),"down",false)+
+      rcard("Net P&L",rupee0(netPnl),netPnl>=0?"up":"down",true)+
+      rcard("Breakeven sell",rupee(breakeven),"",false);
+    document.getElementById("cTable").querySelector("tbody").innerHTML=
+      crow("Brokerage",brokerage)+crow("STT / CTT",stt)+crow("Exchange txn",exch)+crow("SEBI charges",sebi)+crow("Stamp duty",stamp)+crow("GST (18%)",gst)+
+      '<tr class="total"><td>Total charges</td><td>'+rupee(totalCharges)+'</td></tr>';
+  }
+  function crow(k,v){ return '<tr><td>'+k+'</td><td>'+rupee(v)+'</td></tr>'; }
+  ["cBuy","cSell","cQty"].forEach(function(id){document.getElementById(id).addEventListener("input",calcCharges);});
+  segHandler("cSeg",function(d){cSeg=d;calcCharges();});
+  segHandler("cPlan",function(d){cPlan=d;calcCharges();});
+
+  // init
+  calcSize(); renderBuys(); calcAvg(); calcRR(); calcCharges();
+})();
+</script>
+</body>
+</html>
